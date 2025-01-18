@@ -11,14 +11,15 @@ def home():
     return render_template('index.html')
 
 # Route for the Live Data Page
-@app.route('/live-data', methods=['GET'])
+@app.route('/live_data.html', methods=['GET'])
 def live_data():
     # Simulate live network speed data
+    print(type(random))  # Should output `<class 'module'>`
     network_speed = random.randint(10, 100)  # Generate a random speed in Mbps
     return render_template('live_data.html', speed=network_speed)
 
 # Route for the Historical Data Page
-@app.route('/historical-data', methods=['GET'])
+@app.route('/historical_data.html', methods=['GET'])
 def historical_data():
     # Simulate historical data as a list of dictionaries
     historical_data = [
