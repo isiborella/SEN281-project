@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import random
+import random
 from flask import Flask,redirect,url_for,render_template,request
 from application import app
 
@@ -14,7 +14,6 @@ def home():
 @app.route('/live_data.html', methods=['GET'])
 def live_data():
     # Simulate live network speed data
-    print(type(random))  # Should output `<class 'module'>`
     network_speed = random.randint(10, 100)  # Generate a random speed in Mbps
     return render_template('live_data.html', speed=network_speed)
 
