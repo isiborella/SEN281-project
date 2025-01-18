@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import random
 from flask import Flask,redirect,url_for,render_template,request
 from application import app
@@ -20,7 +20,7 @@ def live_data():
 # Route for the Historical Data Page
 @app.route('/historical_data.html', methods=['GET'])
 def historical_data():
-    # Simulate historical data as a list of dictionaries
+    # Generate sample historical data
     historical_data = [
         {"date": datetime.datetime.now().strftime("%Y-%m-%d"), "speed": random.randint(10, 100)},
         {"date": (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d"), "speed": random.randint(10, 100)},

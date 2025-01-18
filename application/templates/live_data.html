@@ -12,8 +12,16 @@
     </header>
     <main class="container text-center my-5">
         <h2 class="mb-4">Current Network Speed</h2>
-        <div class="display-1 fw-bold text-primary">
-            {{ speed }} Mbps
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="display-1 fw-bold text-primary me-3">
+                {{ speed }} Mbps
+            </div>
+            <button 
+                class="btn btn-primary d-flex justify-content-center align-items-center" 
+                style="width: 30px; height: 30px; border-radius: 50%;" 
+                onclick="refreshPage()">
+                <span class="text-white fw-bold">↻</span>
+            </button>
         </div>
         <p class="text-muted">Real-time network performance</p>
         <a href="index.html" class="btn btn-secondary mx-2">Back to Home</a>
@@ -21,6 +29,12 @@
     <footer class="bg-light text-center py-3">
         <p>&copy; 2025 Network Analyzer. All rights reserved.</p>
     </footer>
+    <script>
+        // Function to refresh the page
+        function refreshPage() {
+            location.reload();
+        }
+    </script>
 </body>
 </html>
 
