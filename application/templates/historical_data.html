@@ -16,14 +16,18 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Speed (Mbps)</th>
+                    <th>Network Operator</th>
+                    <th>Signal Availability</th>
+                    <th>Signal Strength</th>
                 </tr>
             </thead>
             <tbody>
                 {% for entry in data %}
                 <tr>
                     <td>{{ entry.date }}</td>
-                    <td>{{ entry.speed }}</td>
+                    <td>{{ entry.network operator }}</td>
+                    <td>{{ entry.signal availability }}</td>
+                    <td>{{ entry.signal strength }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
