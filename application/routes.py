@@ -14,8 +14,8 @@ def home():
 @app.route('/live_data.html', methods=['GET'])
 def live_data():
     # Simulate live network speed data
-    signal_strength = random.randint(10, 100)  # Generate a random speed in Mbps
-    return render_template('live_data.html', signalavailability=signal_strength)
+    network_speed = random.randint(10, 100)  # Generate a random speed in Mbps
+    return render_template('live_data.html', signal_strength=network_speed)
 
 # Route for the Historical Data Page
 @app.route('/historical_data.html', methods=['GET'])
