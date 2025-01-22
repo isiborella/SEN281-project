@@ -15,8 +15,8 @@ def home():
 def live_data():
     # Simulate live network speed data
     network_speed = random.randint(10, 100)  # Generate a random speed in Mbps
-    current_date = datetime.now().strftime("%Y-%m-%d")  # Get current date
-    current_time = datetime.now().strftime("%H:%M:%s")  # Get current time
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")  # Get current date
+    current_time = datetime.datetime.now().strftime("%H:%M:%s")  # Get current time
     return render_template('live_data.html', speed=network_speed, date=current_date, time=current_time)
 
 
