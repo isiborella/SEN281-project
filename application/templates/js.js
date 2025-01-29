@@ -5,15 +5,15 @@ const predefinedData =[
     },
     {
         id :"2",
-        network_operator : "GLO",
+        network_operator : "MTN",
     },
     {
         id :"3",
-        network_operator : "GLO",
+        network_operator : "AIRTEL",
     },
     {
         id :"4",
-        network_operator : "GLO",
+        network_operator : "9MOBILE",
     },
 ];
 function initializeData() {
