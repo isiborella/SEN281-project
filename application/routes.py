@@ -5,7 +5,6 @@ from flask import render_template, request, jsonify
 from application import app
 from .logic import NetworkDataHandler
 import serial
-
 data_handler = NetworkDataHandler()
 
 
