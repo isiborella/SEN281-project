@@ -34,11 +34,13 @@
                                 <td>{{ entry.network_operator }}</td>
                                 <td>{{ entry.network_type }}</td>
                                 <td>{{ entry.signal_strength }}</td>
+                                <td>{{ entry.signal_quality }}</td>
                                 <td>
                                     <div class="progress">
                                         <div class="progress-bar {% if entry.signal_quality >= 70 %}bg-success{% elif entry.signal_quality >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
                                              role="progressbar" 
-                                             style="width: {{ entry.signal_quality }}%"
+                                             style:
+                                             width="{{ entry.signal_quality }}%" 
                                              aria-valuenow="{{ entry.signal_quality }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="100">
