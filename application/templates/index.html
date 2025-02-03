@@ -3,26 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Analyzer - Home</title>
+    <title>Network Analyser - Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}">
-      <link rel="stylesheet" href="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}">
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header class="bg-primary text-white text-center py-4">
-        <h1>Network Analyzer</h1>
-        <p>Monitor and analyze your network signal strength</p>
+        <h1>Network Analyser</h1>
+        <p>Monitor, analyse and store Mobile Network Operator network signal information</p>
     </header>
-    <main class="container text-center my-5 flex-grow-1">
-        <h2>Welcome to the Network Analyzer</h2>
+    <main class="container text-center my-3 flex-grow-1">
+        <div class="mt-5  text-center  justify-content-center">
+            <h3>Network Module Status</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if network_operator is defined %}
+                                    {{ network_operator }}
+                                {% endif %}
+                            </h5>
+                            <p class="card-text">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Module Detected:</strong> 
+                                        <span class="status-indicator {% if module_detected %}text-success{% else %}text-danger{% endif %}">
+                                            {% if module_detected %}✔ Yes{% else %}❌ No{% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>SIM Inserted:</strong> 
+                                        <span class="status-indicator {% if sim_inserted %}text-success{% else %}text-danger{% endif %}">
+                                            {% if sim_inserted %}✔ Yes{% else %}❌ No{% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Signal Strength:</strong> 
+                                        <span class="text-info">{{ signal_strength }}</span>
+                                    </li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <p>Choose an option below to get started:</p>
         <div class="d-flex justify-content-center">
-            <a href="live_data.html" class="btn btn-primary mx-2">Live Data</a>
-            <a href="historical_data.html" class="btn btn-secondary mx-2">Historical Data</a>
+            <a href="live_data" class="btn btn-primary mx-2">Live Data</a>
+            <a href="historical_data" class="btn btn-secondary mx-2">Historical Data</a>
         </div>
     </main>
     <footer class="bg-light text-center py-3">
-        <p>&copy; 2025 Network Analyzer. All rights reserved.</p>
+        <p>&copy; 2025 Network Analyser. All rights reserved.</p>
     </footer>
 </body>
 </html>

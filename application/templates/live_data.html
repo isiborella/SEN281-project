@@ -3,44 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Data</title>
+    <title>Live Network Data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header class="bg-primary text-white text-center py-4">
         <h1>Live Network Data</h1>
+        <p>Real-time network performance monitoring</p>
     </header>
-    <main class="container text-center my-5 flex-grow-1">
-        <h2 class="mb-4">Current Signal Information</h2>
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="display-1 fw-bold text-primary me-3">
-                {{ signal_strength }} Mbps
-            </div>
-            <button 
-                class="btn btn-primary d-flex justify-content-center align-items-center" 
-                style="width: 30px; height: 30px; border-radius: 50%;" 
-                onclick="refreshPage()">
-                <span class="text-white fw-bold">↻</span>
-            </button> 
-        </div>
-        <p class="text-muted">Real-time network performance</p>
-        <div class="mt-4">
-            <h5 class="text-secondary">Current Date: <span class="fw-bold">{{ date }}</span></h5>
-            <h5 class="text-secondary">Current Time: <span class="fw-bold">{{ time }}</span></h5>
-            <h5 class="text-secondary">Network Operator: <span class="fw-bold">{{network_operator}}</span></h5>
-        </div>
-        <a href="{{ url_for('home') }}" class="btn btn-secondary mx-2">Back to Home</a>
 
+    <main class="container my-5 flex-grow-1">
+        {% if error %}
+            <div class="alert alert-warning text-center mb-4">{{ error }}</div>
+        {% endif %}
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Current Network Status</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light" style="width: 200px;">Date</th>
+                                <td>{{ date if not error else 'No data available' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Time</th>
+                                <td>{{ time if not error else 'No data available' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Network Operator</th>
+                                <td>{{ network_operator if not error else 'No data available' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Network Type</th>
+                                <td>{{ network_type if not error else 'No data available' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Signal Strength</th>
+                                <td>
+                                    {% if not error %}
+                                        <span class="badge {% if signal_strength >= -70 %}bg-success{% elif signal_strength >= -90 %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ signal_strength }} dBm
+                                        </span>
+                                    {% else %}
+                                        No data available
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Signal Quality</th>
+                                <td>
+                                    {% if not error %}
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar {% if signal_quality >= 70 %}bg-success{% elif signal_quality >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                 role="progressbar" 
+                                                 style="width: {{ signal_quality }}%"
+                                                 aria-valuenow="{{ signal_quality }}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                                {{ signal_quality }}%
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        No data available
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Status</th>
+                                <td>
+                                    {% if not error %}
+                                        <span class="badge {% if availability %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if availability %}Available{% else %}Unavailable{% endif %}
+                                        </span>
+                                    {% else %}
+                                        No data available
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signal Quality Legend -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="card-title mb-0">Signal Quality Reference</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success text-white p-2 me-2" style="width: 80px;">Good</div>
+                            <span>>= 70%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning text-white p-2 me-2" style="width: 80px;">Fair</div>
+                            <span>40% - 69%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-danger text-white p-2 me-2" style="width: 80px;">Poor</div>
+                            <span>< 40%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="refreshPage()">
+                Refresh Data
+            </button>
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
     </main>
-    <footer class="bg-light text-center py-3">
+
+    <footer class="bg-light text-center py-3 mt-4">
         <p>&copy; 2025 Network Analyzer. All rights reserved.</p>
     </footer>
+
     <script>
-        // Function to refresh the page
         function refreshPage() {
             location.reload();
         }
+        // Auto-refresh every 30 seconds
+        setTimeout(refreshPage, 30000);
     </script>
 </body>
 </html>
-
