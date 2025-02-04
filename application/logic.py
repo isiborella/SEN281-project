@@ -116,7 +116,7 @@ try:
 except:
     pass
 
-import num2word
+import num2words
 import serial
 
 
@@ -153,7 +153,7 @@ class portIDAllocation(object):
             print("USBport: ", USBport)
             if os.path.exists(str(USBport)) == True :
                 print("USBport: ", USBport, "portID: ", portID)
-                portID  = num2word.word(counter)
+                portID  = num2words.word(counter)
                 matchingPortList.append(USBport)
                 portIDList.append(portID)
 
