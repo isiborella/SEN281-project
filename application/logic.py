@@ -109,6 +109,198 @@ class NetworkDataHandler:
             return []
 
 
+import getpass, os, subprocess
+import time
+try:
+    import RPi.GPIO as GPIO
+except:
+    pass
+
+import num2word
+import serial
+
+
+class portIDAllocation(object):
+    def __init__(self, *args):
+        super(portIDAllocation, self).__init__(*args)
+        
+    def NumberOfPorts(self):
+        NumberOfPorts = len(list(filter(None, " ".join(list(subprocess.check_output(['lsusb', '-s', ':1']).decode())).split("\n"))))
+        return NumberOfPorts
+     
+    def liveUSBPorts(self):
+        matchingPortList 	= []
+        portIDList		    = []
+        NumUSBPort = self.NumberOfPorts()
+        print(NumUSBPort)
+        current_os_user = getpass.getuser()
+        #print("NumUSBPort: ", NumUSBPort, "current_os_user: ", current_os_user)
+        constant_path = "/dev/ttyUSB"
+        counter = 0
+        try:
+            USBport = constant_path + str(counter)
+            portID  = "Zero"
+            if os.path.exists(str(USBport)) == True :
+                print("USBport: ", USBport)
+                matchingPortList.append(USBport)
+                portIDList.append(portID)
+        except :
+            pass
+        counter     = counter + 1
+        while (counter < NumUSBPort ):
+            variable_path = str(counter)
+            USBport = constant_path + variable_path
+            print("USBport: ", USBport)
+            if os.path.exists(str(USBport)) == True :
+                print("USBport: ", USBport, "portID: ", portID)
+                portID  = num2word.word(counter)
+                matchingPortList.append(USBport)
+                portIDList.append(portID)
+
+            counter += 1
+        print(portIDList, matchingPortList)
+        portAssignment = dict(zip(portIDList, matchingPortList))
+        return portAssignment
+
+class serialportSetup(object):
+    def __init__(self, serialport, *args):
+        self.serialport     = serialport
+        super(serialportSetup, self).__init__(*args)
+
+    def serialSetup(self):
+        serialport      = self.serialport
+        ser             = serial.Serial(serialport, 9600, timeout=1)
+        '''with serial.Serial(serialport, 9600, timeout=1) as ser:
+            print("Inside Own logic",ser, type(ser))
+            return ser
+            '''
+        return ser
+
+class SMSCommands(object):
+    def __init__(self, ser, *args):
+        self.ser        = ser
+        super(SMSCommands, self).__init__(*args)
+    
+    def send_at_command(self, command, timeout=1):
+        ser     = self.ser
+        ser.write((command + "\r\n").encode('utf-8'))
+        time.sleep(timeout)
+        return ser.read_all().decode('utf-8')
+
+    def get_module_info(self):
+        return self.send_at_command( 'ATI')
+
+    def get_sim_info(self):
+        return self.send_at_command( 'AT+CCID')
+
+    def get_operator_info(self):
+        response = self.send_at_command('AT+COPS?')
+        operator_index = response.find('+COPS:')
+        if operator_index != -1:
+            parts = response[operator_index:].split(',')
+            if len(parts) >= 3:
+                operator_name = parts[2].strip('"')
+                return operator_name
+        return None
+
+    def get_signal_info(self):
+        response = self.send_at_command('AT+CSQ')
+        signal_level = response.split(',')[0].strip('+CSQ: ')
+        return signal_level
+
+    def get_network_info(self):
+        #response = self.send_at_command('AT+CIPRXGET?')
+        #response = self.send_at_command('AT+CPSI?')
+        # Enable engineering mode
+        self.send_at_command('AT+CENG=3')
+        time.sleep(1)  # Wait for response
+
+        # Query detailed cell information
+        response = self.send_at_command('AT+CENG?')
+        return response 
+    
+    def get_network_time(self):
+        response = self.send_at_command('AT+CCLK?')
+        return response 
+    
+    def get_network_location_info(self):
+        response = self.send_at_command('AT+CIPGSMLOC=1,1')
+        return response 
+    
+    def is_sim_attached(self):
+        response = self.send_at_command( 'AT+CPIN?')
+        return '+CPIN: READY' in response
+
+    def is_network_available(self):
+        response = self.send_at_command('AT+CREG?')
+        return '+CREG: 0,1' in response or '+CREG: 0,5' in response
+
+    def get_network_operator(self):
+        response = self.send_at_command('AT+COPS?')
+        operator_index = response.find('+COPS:')
+        if operator_index != -1:
+            parts = response[operator_index:].split(',')
+            if len(parts) >= 3:
+                operator_name = parts[2].strip('"')
+                return operator_name
+        return None
+
+    def truncate_message(message, max_length=160):
+        return message[:max_length]
+    
+    def set_sms_mode(self):
+        self.send_at_command('AT+CMGF=1')  # Set SMS mode to text mode
+        time.sleep(3)
+
+    def list_sms_messages(self):
+        messages = []
+        response = self.send_at_command( 'AT+CMGL="ALL"')
+        time.sleep(3)
+        """buffereing_bytes = ser.read(ser.inWaiting())
+        print("response: ", response)
+        request = buffereing_bytes.decode('utf-8')
+        print("request: ", request)"""
+        lines = response.strip().split('\r\n')
+        #print("lines: ", lines)
+        print(len(lines), type(lines))
+        #for i in range(0, len(lines)):
+        for line in lines:
+            if line.startswith('+CMGL'):
+                messages.append({
+                    'index': int(line.split(',')[0].split(':')[1].strip())})
+                #messages.append(line)
+            #print(lines[i], "\n\n")
+            #if lines[i].start
+            #messages.append({'message': lines[i]})
+        """try:
+            for i in range(0, len(lines), 2):
+                print(lines[i], len(lines))
+                messages.append({
+                    'index': int(lines[i].split(',')[0].split(':')[1].strip()),
+                    'sender': lines[i].split(',')[1].strip(),
+                    'date': lines[i].split(',')[3].strip(),
+                    'message': lines[i+1].strip()
+                })
+                print(lines[i+1].strip())
+        except:
+            pass"""
+        print(messages)
+        return messages
+    
+    def check_call_status(self):
+        response = self.send_at_command( 'AT+CPAS')
+        return '+CPAS: 0' in response  # Call active
+    
+class gpioDefine(object):
+    def __init__(self, *args):
+        super(gpioDefine, self).__init__(*args)
+    
+    def setup(P_BUTTON):
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(P_BUTTON, GPIO.IN, GPIO.PUD_UP)
+
+
+
 class SIM800C:
     def __init__(self, port, baudrate=9600, timeout=1):
         self.port = port
@@ -144,7 +336,6 @@ class SIM800C:
             print(f"Error checking SIM card: {e}")
             return False
     
-
     def send_at_command(self, command, expected_response="OK", timeout=5):
         if not self.serial:
             raise Exception("SIM800C module is not connected.")
