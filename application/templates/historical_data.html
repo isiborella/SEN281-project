@@ -37,8 +37,12 @@
                                     <div class="progress">
                                         <div class="progress-bar {% if entry.signal_quality >= 70 %}bg-success{% elif entry.signal_quality >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
                                              role="progressbar" 
+<<<<<<< HEAD
                                              style:
                                              width="{{ entry.signal_quality }}%" 
+=======
+                                             style="width: {{ entry.signal_quality }}%"
+>>>>>>> 1e9bab2 (errors)
                                              aria-valuenow="{{ entry.signal_quality }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="100">
